@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Trimestral para Autónomos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+    <header>
+        <h1>Calculadora de Trimestre</h1>
+        <p>Sube tus facturas, se calcula tu neto. Sin bases de datos.</p>
+    </header>
+
+    <section class="config-panel">
+        <label for="sector">Mi Actividad Económica:</label>
+        <select id="sector">
+            <option value="GENERAL">Régimen General (Defecto)</option>
+            <option value="TRANSPORTISTA">Transportista / Taxista</option>
+            <option value="TELETRABAJO">Profesional desde casa (Informático, etc.)</option>
+        </select>
+    </section>
+
+    <section id="dropzone" class="dropzone">
+        <div class="drop-content">
+            <span class="icon">📄</span>
+            <p>Arrastra tus facturas en PDF aquí</p>
+            <span class="subtitle">Se procesarán mediante IA y se destruirán al instante</span>
+        </div>
+    </section>
+
+    <section class="dashboard">
+        <div class="card">
+            <h3>Base Imponible</h3>
+            <p id="total-bruto">0.00 €</p>
+        </div>
+        <div class="card">
+            <h3>IVA a Guardar</h3>
+            <p id="total-iva">0.00 €</p>
+        </div>
+        <div class="card net-card">
+            <h3>Dinero Limpio (Neto)</h3>
+            <p id="total-neto">0.00 €</p>
+        </div>
+    </section>
+
+    <section class="history">
+        <h3>Facturas Procesadas</h3>
+        <ul id="file-list"></ul>
+    </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
