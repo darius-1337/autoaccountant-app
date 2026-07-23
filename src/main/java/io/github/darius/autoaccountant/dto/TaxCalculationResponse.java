@@ -5,6 +5,7 @@ public record TaxCalculationResponse(
         double deductibleTaxBase,
         double originalVat,
         double deductibleVat,
-        String message
+        String message,
+        String aiReasoning
 ) {
 }
