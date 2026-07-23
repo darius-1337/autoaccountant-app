@@ -1,12 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+
 :root {
-    --bg-color: #f4f7f6;
-    --text-color: #333;
-    --primary: #4a90e2;
-    --primary-hover: #357abd;
-    --card-bg: #ffffff;
-    --net-bg: #e8f5e9;
-    --net-text: #2e7d32;
-    --border-radius: 8px;
+    --bg-color: #0a0a0a;
+    --surface-color: #141414;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --border-color: #333333;
+    --highlight-bg: #1a1a1a;
+
+    --border-radius: 4px;
+
+    --main-font: 'Google Sans', -apple-system, sans-serif;
+}
+
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+[data-theme="light"] {
+    --bg-color: #ffffff;
+    --surface-color: #f5f5f5;
+    --text-primary: #000000;
+    --text-secondary: #555555;
+    --border-color: #d4d4d4;
+    --highlight-bg: #eeeeee;
+}
+
+.theme-toggle-btn {
+    text-transform: none;
+    padding: 0.3rem 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
 }
 
 * {
@@ -16,144 +46,197 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--main-font);
     background-color: var(--bg-color);
-    color: var(--text-color);
+    color: var(--text-primary);
     line-height: 1.6;
-    padding: 2rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+}
+
+.nav-brand {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.nav-controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.control-btn, .control-select {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+}
+
+.control-btn:hover, .control-select:hover {
+    border-color: var(--text-primary);
 }
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
 }
 
-header {
-    text-align: center;
-    margin-bottom: 2rem;
+.section-header {
+    margin-bottom: 2.5rem;
 }
 
-header p {
-    color: #666;
-    font-size: 0.95rem;
+.section-header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
-.config-panel {
-    background: var(--card-bg);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
-}
-
-.config-panel select {
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.section-header p {
+    color: var(--text-secondary);
     font-size: 1rem;
 }
 
-.dropzone {
-    border: 2px dashed #bbb;
-    border-radius: var(--border-radius);
-    padding: 3rem 2rem;
-    text-align: center;
-    background-color: #fafafa;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.config-panel {
     margin-bottom: 2rem;
 }
 
-.dropzone.dragover {
-    background-color: #e3f2fd;
-    border-color: var(--primary);
-}
-
-.drop-content .icon {
-    font-size: 3rem;
+.config-panel label {
     display: block;
-    margin-bottom: 1rem;
-}
-
-.dropzone p {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.dropzone .subtitle {
     font-size: 0.85rem;
-    color: #777;
-    margin-top: 0.5rem;
-    display: block;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.full-input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.full-input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+}
+
+.dropzone {
+    border: 1px dashed var(--border-color);
+    padding: 3.5rem 2rem;
+    text-align: center;
+    background-color: var(--surface-color);
+    cursor: pointer;
+    margin-bottom: 2.5rem;
+    border-radius: var(--border-radius);
+    transition: border-color 0.3s;
+}
+
+.dropzone:hover, .dropzone.dragover {
+    border-color: var(--text-primary);
+}
+
+.drop-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.drop-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.warning-box {
+    margin-top: 1.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: inline-block;
 }
 
 .dashboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
 }
 
 .card {
-    background: var(--card-bg);
     padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--surface-color);
     border-radius: var(--border-radius);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    text-align: center;
+}
+
+.card-highlight {
+    background-color: var(--highlight-bg);
+    border-color: var(--text-primary);
 }
 
 .card h3 {
-    font-size: 0.9rem;
-    color: #666;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
 }
 
 .card p {
-    font-size: 1.8rem;
-    font-weight: bold;
+    font-size: 1.6rem;
+    font-weight: 600;
 }
 
-.net-card {
-    background-color: var(--net-bg);
-    border: 1px solid #c8e6c9;
+.history {
+    margin-bottom: 2.5rem;
 }
 
-.net-card h3, .net-card p {
-    color: var(--net-text);
+.history h3 {
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .history ul {
     list-style: none;
-    margin-top: 1rem;
 }
 
 .history li {
-    background: var(--card-bg);
     padding: 1rem;
+    border: 1px solid var(--border-color);
     margin-bottom: 0.5rem;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    background-color: var(--surface-color);
     display: flex;
-    align-items: center;
-    font-size: 0.95rem;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    border-radius: var(--border-radius);
 }
 
-.history li.error {
-    background-color: #ffebee;
-    color: #c62828;
-}
-
-.status-icon {
-    margin-right: 10px;
-    font-size: 1.2rem;
-}
-
-.history em {
-    color: #666;
+.footer {
+    text-align: center;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border-color);
     font-size: 0.85rem;
-    margin-left: auto;
+    color: var(--text-secondary);
 }

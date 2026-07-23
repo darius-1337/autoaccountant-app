@@ -1,55 +1,78 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Trimestral para Autónomos</title>
+    <title>AutoAccountant</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 </head>
 <body>
+<nav class="navbar">
+    <div class="nav-brand">AutoAccountant</div>
+    <div class="nav-controls">
+        <button id="themeToggle" class="control-btn material-symbols-outlined theme-toggle-btn" aria-label="Cambiar tema">light_mode</button>
+        <select id="langSwitch" class="control-select">
+            <option value="es">🇪🇸</option>
+            <option value="en">🇬🇧</option>
+        </select>
+    </div>
+</nav>
+
 <main class="container">
-    <header>
-        <h1>Calculadora de Trimestre</h1>
-        <p>Sube tus facturas, se calcula tu neto. Sin bases de datos.</p>
+    <header class="section-header">
+        <h1 data-i18n="title">Calculadora Fiscal</h1>
+        <p data-i18n="subtitle">Análisis automatizado de facturas. Privado y sin estado.</p>
     </header>
 
     <section class="config-panel">
-        <label for="sector">Mi Actividad Económica:</label>
-        <select id="sector">
-            <option value="GENERAL">Régimen General (Defecto)</option>
-            <option value="TRANSPORTISTA">Transportista / Taxista</option>
-            <option value="TELETRABAJO">Profesional desde casa (Informático, etc.)</option>
-        </select>
+        <label for="sectorInput" data-i18n="sectorLabel">Actividad Económica (Epígrafe IAE)</label>
+        <input list="iaeList" id="sectorInput" class="full-input" placeholder="Buscar actividad..." autocomplete="off">
+        <datalist id="iaeList"></datalist>
     </section>
 
+    <!-- Zona de Arrastre -->
     <section id="dropzone" class="dropzone">
         <div class="drop-content">
-            <span class="icon">📄</span>
-            <p>Arrastra tus facturas en PDF aquí</p>
-            <span class="subtitle">Se procesarán mediante IA y se destruirán al instante</span>
+            <p class="drop-title" data-i18n="dropText">Arrastrar facturas (PDF)</p>
+            <p class="drop-subtitle" data-i18n="dropSubText">Procesamiento local mediante IA</p>
+            <div id="cold-start-warning" class="warning-box">
+                <span data-i18n="coldStart">Aviso: El servidor gratuito puede tardar 50s en responder al primer archivo.</span>
+            </div>
         </div>
     </section>
 
+    <!-- Panel de Resultados -->
     <section class="dashboard">
         <div class="card">
-            <h3>Base Imponible</h3>
-            <p id="total-bruto">0.00 €</p>
+            <h3 data-i18n="cardGross">Ingreso Bruto</h3>
+            <p id="totalGross">0.00 €</p>
         </div>
         <div class="card">
-            <h3>IVA a Guardar</h3>
-            <p id="total-iva">0.00 €</p>
+            <h3 data-i18n="cardVat">IVA (M303)</h3>
+            <p id="totalVat">0.00 €</p>
         </div>
-        <div class="card net-card">
-            <h3>Dinero Limpio (Neto)</h3>
-            <p id="total-neto">0.00 €</p>
+        <div class="card">
+            <h3 data-i18n="cardIrpf">IRPF (M130)</h3>
+            <p id="totalIrpf">0.00 €</p>
+        </div>
+        <div class="card card-highlight">
+            <h3 data-i18n="cardNet">Neto Disponible</h3>
+            <p id="totalNet">0.00 €</p>
         </div>
     </section>
 
+    <!-- Historial -->
     <section class="history">
-        <h3>Facturas Procesadas</h3>
-        <ul id="file-list"></ul>
+        <h3 data-i18n="historyTitle">Registro de operaciones</h3>
+        <ul id="fileList"></ul>
     </section>
 </main>
+
+<footer class="footer">
+    <p data-i18n="footerText">Aviso: Herramienta de estimación. No sustituye la asesoría fiscal profesional.</p>
+</footer>
 <script src="app.js"></script>
 </body>
 </html>
