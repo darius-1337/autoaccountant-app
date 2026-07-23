@@ -7,6 +7,8 @@ public class GeminiOcrServiceImpl implements InvoiceOcrService {
 
     @Override
     public OcrResult readInvoice(MultipartFile file) {
+
+        // call gemini api here this is mock data
         return new OcrResult(100.0, 21.0, "GASOLINERA");
     }
 }
