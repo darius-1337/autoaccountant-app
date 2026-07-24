@@ -46,7 +46,7 @@ Riesgos concretos que conviene tener presentes:
 
 **El despliegue gratuito se duerme.** En Render, el servicio se suspende tras unos minutos sin uso. La primera petición después de ese periodo puede tardar cerca de un minuto en responder. No está roto, está arrancando.
 
-**Hay un límite de peticiones por IP** para no agotar la cuota gratuita de la API. Si subes muchas facturas seguidas, algunas se rechazarán temporalmente.
+**Hay un límite de peticiones por IP** para no agotar la cuota gratuita de la API, Gemini tiene su propio limite configurable, pero he decidido usar tambien la libreria Bucket4j. Si subes muchas facturas seguidas, algunas se rechazarán temporalmente.
 
 ## Estado actual
 
