@@ -1,34 +1,78 @@
 package io.github.darius.autoaccountant.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum ExpenseCategory {
 
-    FUEL {
+    FUEL_AND_VEHICLE {
         @Override
-        public double calculateDeductiblePercentage(String sector) {
-            return "TRANSPORT".equalsIgnoreCase(sector) ? 1.0 : 0.5;
+        public DeductionRates calculateRates(boolean isVehicleIntensive) {
+            return isVehicleIntensive
+                    ? new DeductionRates(1.0, 1.0, false)
+                    : new DeductionRates(0.5, 0.0, true);
         }
     },
-    FOOD {
+    HOME_OFFICE_SUPPLIES {
         @Override
-        public double calculateDeductiblePercentage(String sector) {
-            return 0.0;
+        public DeductionRates calculateRates(boolean isVehicleIntensive) {
+            return new DeductionRates(0.0, 0.0, true);
         }
+    },
+    OFFICE_RENT {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, false); }
     },
     OFFICE_AND_TECH {
         @Override
-        public double calculateDeductiblePercentage(String sector) {
-            return 1.0;
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, false); }
+    },
+    PROFESSIONAL_SERVICES {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, false); }
+    },
+    TRAINING {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, false); }
+    },
+    INSURANCE_AND_FEES {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, false); }
+    },
+    BANKING_FEES {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, false); }
+    },
+
+    TRAVEL_AND_MEALS {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, true); }
+    },
+    CLIENT_ENTERTAINMENT {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, true); }
+    },
+    WORK_CLOTHING {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) { return new DeductionRates(1.0, 1.0, true); }
+    },
+
+    // save default so it doesnt throw a null
+    OTHER {
+        @Override
+        public DeductionRates calculateRates(boolean isVehicleIntensive) {
+            return new DeductionRates(0.0, 0.0, true);
         }
     };
 
-    public abstract double calculateDeductiblePercentage(String sector);
+    public abstract DeductionRates calculateRates(boolean isVehicleIntensive);
 
+    @JsonCreator
     public static ExpenseCategory fromText(String text) {
+        if (text == null || text.isBlank()) return OTHER;
         try {
             return ExpenseCategory.valueOf(text.toUpperCase());
-        } catch (IllegalArgumentException | NullPointerException ex) {
-            return OFFICE_AND_TECH;
-            // safe default, manage this is pending dw xoxoxo
+        } catch (IllegalArgumentException e) {
+            return OTHER;
         }
     }
 }
