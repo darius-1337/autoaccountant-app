@@ -18,6 +18,11 @@ const translations = {
         footerText: "Aviso: Herramienta de estimación. No sustituye la asesoría fiscal profesional.",
         statusProcessing: "[PROCESANDO]",
         statusError: "[ERROR]",
+        statusRejected: "[RECHAZADO]",
+        statusReview: "[REVISIÓN]",
+        statusOk: "[OK]",
+        aiReasoning: "IA Auditor:",
+        pending: "Pendiente",
         alertPdf: "Formato no válido. Solo se admiten archivos PDF."
     },
     en: {
@@ -35,6 +40,11 @@ const translations = {
         footerText: "Disclaimer: Estimation tool. Does not replace professional tax advice.",
         statusProcessing: "[PROCESSING]",
         statusError: "[ERROR]",
+        statusRejected: "[REJECTED]",
+        statusReview: "[REVIEW]",
+        statusOk: "[OK]",
+        aiReasoning: "AI Auditor:",
+        pending: "Pending",
         alertPdf: "Invalid format. Only PDF files are allowed."
     }
 };
@@ -59,7 +69,7 @@ themeToggle.addEventListener('click', () => {
     } else {
         html.setAttribute('data-theme', 'dark');
         themeToggle.innerText = 'light_mode';
-    }c
+    }
 });
 
 langSwitch.addEventListener('change', (e) => {
@@ -170,20 +180,39 @@ async function processInvoice(file) {
 
         const data = await response.json();
 
+        if (!data.isValid) {
+            li.innerHTML = `<span><strong>${translations[currentLang].statusRejected}</strong> ${file.name}</span>
+                            <span style="color: var(--text-secondary); font-size: 0.85em;">${data.manualReviewReason || 'N/A'}</span>`;
+            li.style.borderColor = "var(--border-color)";
+            return;
+        }
+
+        if (data.requiresManualReview) {
+            li.innerHTML = `
+                <div style="width: 100%;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span><strong>${translations[currentLang].statusReview}</strong> ${file.name} (${data.category})</span>
+                        <span>+0.00€ (${translations[currentLang].pending})</span>
+                    </div>
+                    <div class="warning-box" style="margin-top: 0.5rem; width: 100%; border-left: 3px solid var(--text-primary);">
+                        <strong>${translations[currentLang].aiReasoning}</strong> ${data.aiReasoning}<br>
+                        <em>Aviso: ${data.manualReviewReason}</em>
+                    </div>
+                </div>`;
+            return;
+        }
+
         totals.gross += data.originalTaxBase;
         totals.vat += data.deductibleVat;
 
-        const netYield = data.originalTaxBase - data.deductibleTaxBase;
+        const netYield = data.originalTaxBase - data.deductibleTaxBaseIRPF;
         totals.irpf += netYield > 0 ? (netYield * 0.20) : 0;
 
         totals.net = totals.gross - totals.vat - totals.irpf;
 
         actualizarDashboard();
 
-        const textStatus = { 'GREEN': '[OK]', 'YELLOW': '[INFO]', 'RED': '[NO-DED]' };
-        const statusMark = textStatus[data.statusColor] || '[...]';
-
-        li.innerHTML = `<span><strong>${statusMark}</strong> ${file.name} | ${data.message}</span>
+        li.innerHTML = `<span><strong>${translations[currentLang].statusOk}</strong> ${file.name} | ${data.category}</span>
                         <span>+${data.deductibleVat.toFixed(2)}€</span>`;
 
     } catch (error) {
