@@ -28,7 +28,7 @@ public class InvoiceController {
             @RequestParam("sector") String sector
             ) {
         try {
-            OcrResult ocrResult = ocrService.readInvoice(file);
+            OcrResult ocrResult = ocrService.readInvoice(file, sector);
             TaxCalculationResponse response = taxCalculatorService.processExpense(ocrResult, sector);
 
             return ResponseEntity.ok(response);
