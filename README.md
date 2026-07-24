@@ -1,5 +1,7 @@
 # AutoAccountant
 
+*[English version](README.en.md)*
+
 > **Proyecto en desarrollo.** Algunas funciones descritas aquí todavía no están completas. Consulta el apartado *Estado actual* para saber qué funciona hoy. Esta nota es temporal.
 
 Calculadora fiscal trimestral para autónomos en España. Lee facturas de gasto con un modelo de inteligencia artificial, las clasifica según la actividad económica declarada y desglosa lo que hay que reservar para Hacienda.
