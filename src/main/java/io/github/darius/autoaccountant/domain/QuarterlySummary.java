@@ -15,11 +15,11 @@ public record QuarterlySummary(
         BigDecimal vatToPay,
         BigDecimal deductibleExpenses,
         BigDecimal retaContribution,
-        BigDecimal hardJustifyExpense,
+        BigDecimal hardToJustifyExpense,
         BigDecimal netProfit,
         BigDecimal retentionsApplied,
         BigDecimal irpfPrePayment,
-        BigDecimal avalibleCash,
+        BigDecimal availableCash,
         int excludedDocuments
 ) {
     private static final int SCALE = 2;
@@ -43,7 +43,7 @@ public record QuarterlySummary(
                 .filter(expense -> quarter.contains(expense.date(), year))
                 .toList();
 
-        List<ProcessedExpense> pendingExpenses = allExpenses.stream()
+        List<ProcessedExpense> pendingExpenses = quarterExpenses.stream()
                 .filter(ProcessedExpense::countsTowardsQuarter)
                 .toList();
 
@@ -84,7 +84,7 @@ public record QuarterlySummary(
                   .setScale(SCALE, ROUNDING);
 
         // dinero cobrado sin pagar provedores y SS, no incluido lo que se paga a hacienda
-        BigDecimal avalibleCash = totalBilled
+        BigDecimal availableCash = totalBilled
                 .subtract(grossExpensePaid)
                 .subtract(reta)
                 .subtract(vatToPay.max(BigDecimal.ZERO))
@@ -97,7 +97,7 @@ public record QuarterlySummary(
                 deductibleInputVat, vatToPay,
                 deductibleExpenseBase, reta, hardToJustify,
                 netProfit, retentions, irpfPrepayment,
-                avalibleCash, excludedExpenses
+                availableCash, excludedExpenses
         );
     }
 
