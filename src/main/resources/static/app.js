@@ -9,7 +9,7 @@ const translations = {
     es: {
         title: "Calculadora Fiscal",
         subtitle: "Análisis automatizado de facturas. Privado y sin estado.",
-        sectorLabel: "Actividad Económica (Epígrafe IAE)",
+        sectorLabel: "Actividad Económica (Código CNAE)",
         dropText: "Arrastrar facturas (PDF)",
         dropSubText: "Procesamiento local mediante IA",
         coldStart: "Aviso: El servidor gratuito puede tardar 50s en responder al primer archivo.",
@@ -31,7 +31,7 @@ const translations = {
     en: {
         title: "Tax Calculator",
         subtitle: "Automated invoice analysis. Private and stateless.",
-        sectorLabel: "Economic Activity (IAE Code)",
+        sectorLabel: "Economic Activity (CNAE Code)",
         dropText: "Drag & Drop invoices (PDF)",
         dropSubText: "Local AI processing",
         coldStart: "Notice: Free tier server may take up to 50s to wake up on the first file.",
@@ -60,7 +60,7 @@ const dropzone = document.getElementById('dropzone');
 const fileList = document.getElementById('fileList');
 
 document.addEventListener("DOMContentLoaded", () => {
-    cargarEpigrafesIAE();
+    loadCnaeData();
     updateUILanguage();
 });
 
@@ -90,13 +90,13 @@ function updateUILanguage() {
     });
 }
 
-async function cargarEpigrafesIAE() {
+async function loadCnaeData() {
     const cacheKey = 'iae_codes_istac_v1';
     const datosGuardados = localStorage.getItem(cacheKey);
 
     if (datosGuardados) {
         iaeDataCache = JSON.parse(datosGuardados);
-        construirBuscador();
+        buildBrowser();
         return;
     }
 
@@ -112,13 +112,13 @@ async function cargarEpigrafesIAE() {
         });
 
         localStorage.setItem(cacheKey, JSON.stringify(iaeDataCache));
-        construirBuscador();
+        buildBrowser();
     } catch (error) {
         console.error("Error cargando el IAE:", error);
     }
 }
 
-function construirBuscador() {
+function buildBrowser() {
     iaeList.innerHTML = '';
     iaeDataCache.forEach(actividad => {
         const option = document.createElement('option');
@@ -127,15 +127,19 @@ function construirBuscador() {
     });
 }
 
-function obtenerPerfilFiscal(inputText) {
+function getTaxProfile(inputText) {
     const match = inputText.match(/\[(.*?)\]/);
-    if (!match) return "GENERAL";
+    if (!match) return "GENERIC";
 
-    const iaeCode = match[1];
+    const code = match[1];
 
-    if (iaeCode.startsWith("1_72") || iaeCode.startsWith("1_38")) return "TRANSPORT";
-    if (iaeCode.startsWith("1_76") || iaeCode.startsWith("1_39") || iaeCode.startsWith("1_84")) return "DESK_BASED";
-    if (iaeCode.startsWith("1_97") || iaeCode.startsWith("2_88")) return "STUDIO_BASED";
+        if (code.startsWith("4932")) return "TAXI_VTC";
+        if (code.startsWith("8553")) return "DRIVING_SCHOOL";
+        if (code.startsWith("49") || code.startsWith("53")) return "TRANSPORT";
+        if (code.startsWith("461")) return "COMMERCIAL_AGENT";
+        if (code.startsWith("96")) return "STUDIO_BASED";
+        if (code.startsWith("62") || code.startsWith("63")
+            || code.startsWith("70") || code.startsWith("74")) return "DESK_BASED";
 
     return "GENERIC";
 }
@@ -187,7 +191,7 @@ dropzone.addEventListener('keydown', (e) => {
 });
 
 async function processInvoice(file) {
-    const perfilJava = obtenerPerfilFiscal(sectorInput.value);
+    const perfilJava = getTaxProfile(sectorInput.value);
 
 const rowId = `row-${nextRowId++}`;
 const li = document.createElement('li');
@@ -319,7 +323,7 @@ async function calculateQuarter() {
         profile: {
             iaeCode: (sectorInput.value.match(/\[(.*?)\]/) || [null, ""])[1],
             iaeSection: document.getElementById('iaeSection').value,
-            deductionProfile: obtenerPerfilFiscal(sectorInput.value),
+            deductionProfile: getTaxProfile(sectorInput.value),
             monthlyRetaFee: Number(document.getElementById('retaFee').value) || 0,
             activityStartYear: Number(document.getElementById('startYear').value) || new Date().getFullYear()
         },
