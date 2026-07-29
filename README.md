@@ -32,7 +32,7 @@ Riesgos concretos que conviene tener presentes:
 
 ![Facturas procesadas con distintos estados](docs/img/facturas-procesadas.png)
 
-**4. Revisa lo marcado en ámbar.** Algunos gastos no se pueden resolver automáticamente: los relacionados con vehículos, los suministros de la vivienda, las dietas y las atenciones a clientes dependen de datos que una factura por sí sola no contiene. Esas facturas quedan fuera del cálculo hasta que las confirmes. Si te equivocaste al subir algo, elimínalo y los totales se recalculan solos.
+**4. Revisa lo marcado.** Algunos gastos no se pueden resolver automáticamente: los relacionados con vehículos, los suministros de la vivienda, las dietas y las atenciones a clientes dependen de datos que una factura por sí sola no contiene. Esas facturas quedan fuera del cálculo hasta que las confirmes. Si te equivocaste al subir algo, elimínalo y los totales se recalculan solos.
 
 **5. Lee el resultado.** El panel muestra el total facturado, el IVA que hay que reservar y el dinero que queda realmente disponible.
 
