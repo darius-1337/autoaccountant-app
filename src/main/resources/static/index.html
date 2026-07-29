@@ -31,9 +31,76 @@
         <label for="sectorInput" data-i18n="sectorLabel">Actividad Económica (Epígrafe IAE)</label>
         <input list="iaeList" id="sectorInput" class="full-input" placeholder="Buscar actividad..." autocomplete="off">
         <datalist id="iaeList"></datalist>
+        <div class="profile-grid">
+            <label>Sección IAE
+                <select id="iaeSection">
+                    <option value="PRIMERA">1ª — Empresarial (sin retención)</option>
+                    <option value="SEGUNDA">2ª — Profesional (retención)</option>
+                    <option value="TERCERA">3ª — Artística (retención)</option>
+                </select>
+            </label>
+
+            <label>Cuota RETA mensual (€)
+                <input type="number" id="retaFee" min="0" step="0.01" placeholder="300">
+            </label>
+
+            <label>Año de alta
+                <input type="number" id="startYear" min="1990" max="2030" placeholder="2022">
+            </label>
+
+            <label>Trimestre
+                <select id="quarterSelect">
+                    <option value="Q1">1T (ene–mar)</option>
+                    <option value="Q2">2T (abr–jun)</option>
+                    <option value="Q3">3T (jul–sep)</option>
+                    <option value="Q4">4T (oct–dic)</option>
+                </select>
+            </label>
+
+            <label>Año fiscal
+                <input type="number" id="yearSelect" min="2020" max="2030" value="2026">
+            </label>
+        </div>
     </section>
 
-    <!-- Zona de Arrastre -->
+
+    <section class="income-panel">
+        <h3>Ingresos del trimestre</h3>
+        <p class="help-text">
+            Introduce el <strong>total facturado con IVA incluido</strong>, antes de retenciones.
+            Si un cliente te practicó retención, pon el importe de la factura, no lo que te llegó al banco.
+        </p>
+
+        <div class="income-form">
+            <input type="date" id="incomeDate">
+            <input type="number" id="incomeAmount" min="0" step="0.01" placeholder="Importe con IVA">
+
+            <select id="incomeVatRate">
+                <option value="0.21">IVA 21%</option>
+                <option value="0.10">IVA 10%</option>
+                <option value="0.04">IVA 4%</option>
+                <option value="0">Exento / 0%</option>
+            </select>
+
+            <select id="incomeClientType">
+                <option value="PARTICULAR">Particular</option>
+                <option value="BUSINESS">Empresa o autónomo</option>
+                <option value="FOREIGN">Cliente extranjero</option>
+            </select>
+
+            <select id="incomePaymentMethod">
+                <option value="CASH">Efectivo</option>
+                <option value="BIZUM">Bizum</option>
+                <option value="TRANSFER">Transferencia</option>
+                <option value="CARD">Tarjeta</option>
+            </select>
+
+            <button type="button" onclick="anadirIngreso()">Añadir</button>
+        </div>
+
+        <ul id="incomeList"></ul>
+    </section>
+
     <section id="dropzone" class="dropzone">
         <div class="drop-content">
             <p class="drop-title" data-i18n="dropText">Arrastrar facturas (PDF)</p>
@@ -43,6 +110,8 @@
             </div>
         </div>
     </section>
+
+    <input type="file" id="fileInput" accept="application/pdf" multiple hidden>
 
     <!-- Panel de Resultados -->
     <section class="dashboard">
@@ -63,6 +132,8 @@
             <p id="totalNet">0.00 €</p>
         </div>
     </section>
+
+    <p id="excludedNote" class="help-text" hidden></p>
 
     <!-- Historial -->
     <section class="history">
