@@ -1,5 +1,8 @@
 let currentLang = 'es';
-let totals = { gross: 0, vat: 0, irpf: 0, net: 0 };
+let processedExpenses = [];
+let manualIncome = [];
+let nextRowId = 0;
+
 let iaeDataCache = [];
 
 const translations = {
@@ -131,23 +134,47 @@ function obtenerPerfilFiscal(inputText) {
     const iaeCode = match[1];
 
     if (iaeCode.startsWith("1_72") || iaeCode.startsWith("1_38")) return "TRANSPORT";
-    if (iaeCode.startsWith("1_76") || iaeCode.startsWith("1_39") || iaeCode.startsWith("1_84")) return "OFFICE_AND_TECH";
+    if (iaeCode.startsWith("1_76") || iaeCode.startsWith("1_39") || iaeCode.startsWith("1_84")) return "DESK_BASED";
+    if (iaeCode.startsWith("1_97") || iaeCode.startsWith("2_88")) return "STUDIO_BASED";
 
-    return "GENERAL";
+    return "GENERIC";
 }
 
-dropzone.addEventListener('dragover', (e) => {
+let dragDepth = 0;
+
+dropzone.addEventListener('dragenter', (e) => {
     e.preventDefault();
+    dragDepth++;
     dropzone.classList.add('dragover');
 });
 
+dropzone.addEventListener('dragover', (e) => e.preventDefault());
+
 dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('dragover');
+    dragDepth--;
+    if (dragDepth <= 0) { dragDepth = 0; dropzone.classList.remove('dragover'); }
 });
 
 dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropzone.classList.remove('dragover');
+
+
+const fileInput = document.getElementById('fileInput');
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
+
+    fileInput.addEventListener('change', () => {
+    for (let file of fileInput.files) {
+        if (file.type === "application/pdf") processInvoice(file);
+        else alert(translations[currentLang].alertPdf);
+    }
+    fileInput.value = '';
+});
+
 
     const files = e.dataTransfer.files;
     for (let file of files) {
@@ -162,9 +189,26 @@ dropzone.addEventListener('drop', (e) => {
 async function processInvoice(file) {
     const perfilJava = obtenerPerfilFiscal(sectorInput.value);
 
-    const li = document.createElement('li');
-    li.innerHTML = `<span><strong>${translations[currentLang].statusProcessing}</strong> ${file.name}</span> <span>...</span>`;
-    fileList.prepend(li);
+const rowId = `row-${nextRowId++}`;
+const li = document.createElement('li');
+li.id = rowId;
+li.innerHTML = `
+    <span><strong>${translations[currentLang].statusProcessing}</strong> ${file.name}</span>
+    <span class="row-actions">
+        <span class="row-amount">...</span>
+        <button type="button" class="row-remove" aria-label="Eliminar">&times;</button>
+    </span>`;
+fileList.prepend(li);
+
+li.querySelector('.row-remove').addEventListener('click', (e) => {
+    e.stopPropagation();
+    processedExpenses = processedExpenses.filter(item => item.__rowId !== rowId);
+    li.remove();
+    calculateQuarter();
+});
+
+data.__rowId = rowId;
+processedExpenses.push(data);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -184,6 +228,9 @@ async function processInvoice(file) {
             li.innerHTML = `<span><strong>${translations[currentLang].statusRejected}</strong> ${file.name}</span>
                             <span style="color: var(--text-secondary); font-size: 0.85em;">${data.manualReviewReason || 'N/A'}</span>`;
             li.style.borderColor = "var(--border-color)";
+
+            processedExpenses.push(data);
+
             return;
         }
 
@@ -199,18 +246,13 @@ async function processInvoice(file) {
                         <em>Aviso: ${data.manualReviewReason}</em>
                     </div>
                 </div>`;
+
+                processedExpenses.push(data);
+
             return;
         }
 
-        totals.gross += data.originalTaxBase;
-        totals.vat += data.deductibleVat;
-
-        const netYield = data.originalTaxBase - data.deductibleTaxBaseIRPF;
-        totals.irpf += netYield > 0 ? (netYield * 0.20) : 0;
-
-        totals.net = totals.gross - totals.vat - totals.irpf;
-
-        actualizarDashboard();
+        processedExpenses.push(data);
 
         li.innerHTML = `<span><strong>${translations[currentLang].statusOk}</strong> ${file.name} | ${data.category}</span>
                         <span>+${data.deductibleVat.toFixed(2)}€</span>`;
@@ -222,9 +264,105 @@ async function processInvoice(file) {
     }
 }
 
-function actualizarDashboard() {
-    document.getElementById('totalGross').innerText = totals.gross.toFixed(2) + " €";
-    document.getElementById('totalVat').innerText = totals.vat.toFixed(2) + " €";
-    document.getElementById('totalIrpf').innerText = totals.irpf.toFixed(2) + " €";
-    document.getElementById('totalNet').innerText = totals.net.toFixed(2) + " €";
+function addManualIncome() {
+    const date = document.getElementById('incomeDate').value;
+    const amount = document.getElementById('incomeAmount').value;
+
+    if (!date || !amount || Number(amount) <= 0) {
+        alert("Introduce fecha e importe válidos.");
+        return;
+    }
+
+    const entry = {
+        date: date,
+        amount: Number(amount),
+        vatRate: Number(document.getElementById('incomeVatRate').value),
+        clientType: document.getElementById('incomeClientType').value,
+        paymentMethod: document.getElementById('incomePaymentMethod').value
+    };
+
+    manualIncome.push(entry);
+    renderIngresos();
+    calcularTrimestre();
+
+    document.getElementById('incomeAmount').value = '';
+}
+
+function renderIncome() {
+    const list = document.getElementById('incomeList');
+    list.innerHTML = '';
+
+    manualIncome.forEach((entry, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${entry.date} · ${entry.paymentMethod}</span>
+            <span class="row-actions">
+                <span class="row-amount">${entry.amount.toFixed(2)} €</span>
+                <button type="button" class="row-remove" aria-label="Eliminar">&times;</button>
+            </span>`;
+        li.querySelector('.row-remove').addEventListener('click', () => {
+            manualIncome.splice(index, 1);
+            renderIncome();
+            calculateQuarter();
+        });
+        list.appendChild(li);
+    });
+}
+
+async function calculateQuarter() {
+    if (manualIncome.length === 0 && processedExpenses.length === 0) {
+        resetDashboard();
+        return;
+    }
+
+    const payload = {
+        profile: {
+            iaeCode: (sectorInput.value.match(/\[(.*?)\]/) || [null, ""])[1],
+            iaeSection: document.getElementById('iaeSection').value,
+            deductionProfile: obtenerPerfilFiscal(sectorInput.value),
+            monthlyRetaFee: Number(document.getElementById('retaFee').value) || 0,
+            activityStartYear: Number(document.getElementById('startYear').value) || new Date().getFullYear()
+        },
+        quarter: document.getElementById('quarterSelect').value,
+        year: Number(document.getElementById('yearSelect').value),
+        income: manualIncome,
+        expenses: processedExpenses
+    };
+
+    try {
+        const response = await fetch('/api/quarter/summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`El servidor respondió ${response.status}`);
+
+        drawDashboard(await response.json());
+    } catch (error) {
+        console.error("Fallo al calcular el trimestre:", error);
+    }
+}
+
+function drawDashboard(summary) {
+    const eur = (n) => Number(n).toFixed(2) + " €";
+
+    document.getElementById('totalGross').innerText = eur(summary.totalBilled);
+    document.getElementById('totalVat').innerText = eur(summary.vatToPay);
+    document.getElementById('totalIrpf').innerText = eur(summary.irpfPrePayment);
+    document.getElementById('totalNet').innerText = eur(summary.avalibleCash);
+
+    const note = document.getElementById('excludedNote');
+    if (summary.excludedDocuments > 0) {
+        note.innerText = `${summary.excludedDocuments} factura(s) fuera del cálculo por revisión pendiente.`;
+        note.hidden = false;
+    } else {
+        note.hidden = true;
+    }
+}
+
+function resetDashboard() {
+    ['totalGross', 'totalVat', 'totalIrpf', 'totalNet']
+        .forEach(id => document.getElementById(id).innerText = "0.00 €");
+    document.getElementById('excludedNote').hidden = true;
 }

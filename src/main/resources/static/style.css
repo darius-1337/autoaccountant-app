@@ -240,3 +240,230 @@ body {
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
+
+:root {
+    color-scheme: dark;
+
+    --state-review: #b8894a;
+    --state-rejected: #a35a5a;
+
+    --space-tight: 0.75rem;
+    --space-base: 1.25rem;
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+    --state-review: #8a6100;
+    --state-rejected: #8f3d3d;
+}
+
+.profile-grid select,
+.profile-grid input,
+.income-form select,
+.income-form input {
+    width: 100%;
+    padding: 0.6rem 0.7rem;
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.profile-grid select,
+.income-form select {
+    appearance: none;
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23a0a0a0' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    cursor: pointer;
+}
+
+[data-theme="light"] .profile-grid select,
+[data-theme="light"] .income-form select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23555555' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+
+.profile-grid select:focus,
+.profile-grid input:focus,
+.income-form select:focus,
+.income-form input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+}
+
+.income-form input[type="number"],
+.profile-grid input[type="number"] {
+    appearance: textfield;
+}
+.income-form input[type="number"]::-webkit-outer-spin-button,
+.income-form input[type="number"]::-webkit-inner-spin-button,
+.profile-grid input[type="number"]::-webkit-outer-spin-button,
+.profile-grid input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--space-tight);
+    margin-top: var(--space-base);
+}
+
+.profile-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0;
+    font-size: 0.7rem;
+}
+
+.income-panel {
+    margin-bottom: 2.5rem;
+    padding-top: var(--space-base);
+    border-top: 1px solid var(--border-color);
+}
+
+.income-panel h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-base);
+}
+
+.help-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.income-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-tight);
+    align-items: stretch;
+    margin-bottom: var(--space-base);
+}
+
+.income-form button {
+    padding: 0.6rem 1.2rem;
+    background-color: var(--text-primary);
+    color: var(--bg-color);
+    border: 1px solid var(--text-primary);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.income-form button:hover {
+    opacity: 0.85;
+}
+
+.income-form button:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+}
+
+#incomeList {
+    list-style: none;
+}
+
+#incomeList li {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--text-secondary);
+    margin-bottom: 0.5rem;
+    background-color: var(--surface-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.85rem;
+    border-radius: var(--border-radius);
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-shrink: 0;
+}
+
+.row-amount {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.row-remove {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.row-remove:hover {
+    color: var(--state-rejected);
+    border-color: var(--state-rejected);
+}
+
+.row-remove:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+}
+
+.history li[data-status="ok"]       { border-left: 3px solid var(--text-primary); }
+.history li[data-status="review"]   { border-left: 3px solid var(--state-review); }
+.history li[data-status="rejected"],
+.history li[data-status="error"]    { border-left: 3px solid var(--state-rejected); }
+
+.history li {
+    align-items: center;
+    gap: 1rem;
+}
+
+#excludedNote {
+    margin: -1rem 0 2.5rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--state-review);
+    color: var(--state-review);
+}
+
+@media (max-width: 560px) {
+    .profile-grid,
+    .income-form {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        margin: 1.5rem auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .income-form button,
+    .row-remove {
+        transition: none;
+    }
+}
