@@ -69,6 +69,14 @@ Two rather than one comes down to there being no database. The server remembers 
 
 The whole project knows one contract, `InvoiceOcrService`, and nothing else. Who implements it underneath doesn't matter: today it's Gemini, tomorrow it could be a local model via Ollama or any other provider. Wiring in a new implementation is a matter of a `@Profile` annotation.
 
+The prompt isn't hardcoded in a string: it's a prompt.md loaded as a resource at startup. It holds the full tax context — VAT rates, deduction rules per category, subsistence allowance limits, what to do with an unreadable invoice — along with the exact JSON schema the model is required to return.
+
+Keeping it outside the code has a concrete upside: tuning how the model classifies things means editing a text file, not recompiling. And it reads as what it is, a document of instructions, instead of being scattered across Java string concatenations.
+
+Two values get substituted before sending: the user's business activity and the tax year. A line is also injected stating whether that activity qualifies for exclusive business use of a vehicle — a fact Java works out itself. That way the model reasons about the same thing the backend will later apply, instead of trying to infer it from the activity name.
+
+Worth keeping in mind: the category enum in the prompt and ExpenseCategory in Java have to match exactly. Change one without the other and invoices start quietly falling into the default category with nothing failing.
+
 Being honest, that's the easy part. Writing the new implementation is real work, because every model has its quirks: Gemini takes a PDF directly, whereas local vision models only understand images and you'd have to rasterise the document first; how you guarantee the response comes back as valid JSON changes from provider to provider; and so on. Schema adherence is noticeably worse on smaller models. But all of that stays sealed inside one class, and the rest of the project never finds out.
 
 This decision is also what makes the privacy claim credible. The cloud version sends your invoices to Google; the local version sends them nowhere. Being able to offer both without rewriting anything was exactly the point.
