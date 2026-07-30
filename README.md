@@ -2,7 +2,7 @@
 
 *[English version](README.en.md)*
 
-> **Proyecto en desarrollo.** El código está terminado y funciona en local; falta el despliegue. Consulta el apartado *Estado actual* para saber dónde está cada cosa. Esta nota es temporal.
+> **Proyecto en desarrollo.** El código está terminado y funciona en local, faltaría el despliegue en Render. Consulta el apartado *Estado actual* para saber dónde está cada cosa. Esta nota es temporal.
 
 Calculadora fiscal trimestral para autónomos en España. Lee facturas de gasto con un modelo de inteligencia artificial, las clasifica según la actividad económica declarada y desglosa lo que hay que reservar para Hacienda.
 
