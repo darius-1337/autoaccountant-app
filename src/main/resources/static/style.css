@@ -433,6 +433,8 @@ body {
     outline-offset: 2px;
 }
 
+.row-main { flex: 1; min-width: 0; }
+
 .history li[data-status="ok"]       { border-left: 3px solid var(--text-primary); }
 .history li[data-status="review"]   { border-left: 3px solid var(--state-review); }
 .history li[data-status="rejected"],
