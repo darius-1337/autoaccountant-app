@@ -28,27 +28,27 @@
     </header>
 
     <section class="config-panel">
-        <label for="sectorInput" data-i18n="sectorLabel">Actividad Económica (Epígrafe IAE)</label>
+        <label for="sectorInput" data-i18n="sectorLabel">Actividad Económica (Código CNAE)</label>
         <input list="iaeList" id="sectorInput" class="full-input" placeholder="Buscar actividad..." autocomplete="off">
         <datalist id="iaeList"></datalist>
         <div class="profile-grid">
-            <label>Sección IAE
+            <label><span data-i18n="sectionLabel">Tipo de actividad</span>
                 <select id="iaeSection">
-                    <option value="PRIMERA">1ª — Empresarial (sin retención)</option>
-                    <option value="SEGUNDA">2ª — Profesional (retención)</option>
-                    <option value="TERCERA">3ª — Artística (retención)</option>
+                    <option value="SEGUNDA">Profesional — programación, diseño, consultoría, estética</option>
+                    <option value="PRIMERA">Empresarial — comercio, hostelería, transporte, taller</option>
+                    <option value="TERCERA">Artística — música, ilustración, interpretación</option>
                 </select>
             </label>
 
-            <label>Cuota RETA mensual (€)
+            <label><span data-i18n="retaLabel">Cuota RETA mensual (€)</span>
                 <input type="number" id="retaFee" min="0" step="0.01" placeholder="300">
             </label>
 
-            <label>Año de alta
+            <label><span data-i18n="startYearLabel">Año de alta</span>
                 <input type="number" id="startYear" min="1990" max="2030" placeholder="2022">
             </label>
 
-            <label>Trimestre
+            <label><span data-i18n="quarterLabel">Trimestre</span>
                 <select id="quarterSelect">
                     <option value="Q1">1T (ene–mar)</option>
                     <option value="Q2">2T (abr–jun)</option>
@@ -57,10 +57,16 @@
                 </select>
             </label>
 
-            <label>Año fiscal
+            <label><span data-i18n="fiscalYearLabel">Año fiscal</span>
                 <input type="number" id="yearSelect" min="2020" max="2030" value="2026">
             </label>
         </div>
+
+        <p class="help-text" data-i18n="sectionHelp">
+            Si eres profesional o artista, tus facturas a empresas llevan una retención de IRPF
+            del 15% (7% durante tus tres primeros años). Si eres empresarial, nunca hay retención.
+            Lo verás en tu modelo 036 o 037.
+        </p>
     </section>
 
 
@@ -95,7 +101,7 @@
                 <option value="CARD">Tarjeta</option>
             </select>
 
-            <button type="button" onclick="anadirIngreso()">Añadir</button>
+            <button type="button" onclick="addManualIncome()">Añadir</button>
         </div>
 
         <ul id="incomeList"></ul>
