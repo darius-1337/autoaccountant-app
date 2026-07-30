@@ -11,11 +11,11 @@ La idea de partida es sencilla: quien factura 30.000 euros al año no se lleva 3
 <!-- Captura principal: el panel con los cuatro números tras cerrar un trimestre. Es la imagen que explica el proyecto más rápido. -->
 ![Panel de resultados de un trimestre](docs/img/panel-resultados.png)
 
-## Un aviso sobre la aplicación
+## Aviso sobre la aplicación
 
 Soy programador, no contable. La parte de ingeniería está trabajada: las reglas fiscales viven en Java, el dominio está cubierto con tests (de momento solo hay uno :P) y los importes se calculan con aritmética decimal exacta. La parte fiscal es otra historia.
 
-He construido las reglas apoyándome en documentación pública, en los datos abiertos de datos.gob.es para la clasificación de actividades, y en bastantes horas de lectura. Pero no tengo formación contable, y hay decisiones que he tomado con mi mejor criterio sin poder contrastarlas con alguien que sepa de verdad. Las pruebas las he hecho con facturas inventadas por mí.
+He construido las reglas apoyándome en documentación pública, en los datos abiertos de [datos.gob.es](https://datos.gob.es/es/) para la clasificación de actividades, y en bastantes horas de lectura. Pero no tengo formación contable, y hay decisiones que he tomado con mi mejor criterio sin poder contrastarlas con alguien que sepa de verdad. Las pruebas las he hecho con facturas inventadas por mí.
 
 Dicho de otro modo: la aplicación hace lo que dice que hace, pero no puedo garantizar que lo que dice sea exactamente lo que diría un asesor fiscal. Trátala como una estimación para hacerte una idea, nunca como la base de una declaración.
 
