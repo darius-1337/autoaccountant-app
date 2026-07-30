@@ -11,10 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Escenario: tatuador autónomo, epígrafe 979.9 (sección primera, sin retenciones),
- * trabaja en estudio ajeno al que entrega un 40%, cuota RETA de 300 €/mes.
- * <p>
- * No hace falta contexto de Spring: QuarterlySummary es aritmética pura.
+ * Escenario: tatuador autónomo CNAE 25 9622
+ * trabaja en estudio ajeno al que entrega un 40%, cuota RETA de 300€/mes
  */
 class QuarterlySummaryTest {
 
@@ -28,7 +26,7 @@ class QuarterlySummaryTest {
             2022
     );
 
-    /** Tres cobros de 2.117,50 € con el IVA ya incluido: base 1.750 € cada uno. */
+    /** Tres cobros de 2.117,50€ con el IVA incluido: base 1.750 € cada uno */
     private List<IncomeEntry> income() {
         return List.of(
                 IncomeEntry.fromGrossAmount(LocalDate.of(2026, 1, 15), new BigDecimal("2117.50"),
@@ -59,7 +57,7 @@ class QuarterlySummaryTest {
     }
 
     @Test
-    @DisplayName("El importe cobrado lleva el IVA dentro: 2117,50 € son 1750 € de base")
+    @DisplayName("importe con iva: 2117,50€ son 1750€ de base")
     void separatesVatFromGrossAmount() {
         IncomeEntry entry = IncomeEntry.fromGrossAmount(LocalDate.of(2026, 1, 15),
                 new BigDecimal("2117.50"), VAT_21, ClientType.PARTICULAR, PaymentMethod.CASH);
@@ -69,25 +67,21 @@ class QuarterlySummaryTest {
     }
 
     @Test
-    @DisplayName("Cierre completo del primer trimestre")
+    @DisplayName("cierre del primer trimestre")
     void calculatesFullQuarter() {
         QuarterlySummary summary = QuarterlySummary.calculate(
                 income(), List.of(studioCommission(), monitor()), profile, FiscalQuarter.Q1, 2026);
 
-        // Ingresos: 5.250 € de base + 1.102,50 € de IVA repercutido
         assertEquals(new BigDecimal("5250.00"), summary.taxableIncome());
         assertEquals(new BigDecimal("1102.50"), summary.outputVat());
         assertEquals(new BigDecimal("6352.50"), summary.totalBilled());
 
-        // Modelo 303: 1.102,50 − 504 de IVA soportado
         assertEquals(new BigDecimal("504.00"), summary.deductibleInputVat());
         assertEquals(new BigDecimal("598.50"), summary.vatToPay());
 
-        // Rendimiento neto: 5.250 − 2.400 de gastos − 900 de RETA − 97,50 de difícil justificación
         assertEquals(new BigDecimal("97.50"), summary.hardToJustifyExpense());
         assertEquals(new BigDecimal("1852.50"), summary.netProfit());
 
-        // Modelo 130: 20% del neto. Cliente particular, así que no hay retenciones que restar
         assertEquals(BigDecimal.ZERO.setScale(2), summary.retentionsApplied());
         assertEquals(new BigDecimal("370.50"), summary.irpfPrePayment());
 
@@ -96,7 +90,7 @@ class QuarterlySummaryTest {
     }
 
     @Test
-    @DisplayName("Una factura pendiente de revisión no suma y se contabiliza como excluida")
+    @DisplayName("factura pendiente de revision no suma y se contabiliza como excluida")
     void excludesExpensesPendingReview() {
         ProcessedExpense pending = new ProcessedExpense(
                 LocalDate.of(2026, 2, 20),
@@ -113,7 +107,7 @@ class QuarterlySummaryTest {
     }
 
     @Test
-    @DisplayName("Una factura de otro trimestre queda fuera del cálculo")
+    @DisplayName("factura de otro trimestre fuera del calculo")
     void ignoresExpensesOutsideTheQuarter() {
         ProcessedExpense fromQ2 = new ProcessedExpense(
                 LocalDate.of(2026, 4, 2),
@@ -130,7 +124,7 @@ class QuarterlySummaryTest {
     }
 
     @Test
-    @DisplayName("Un trimestre en pérdidas no genera pago fraccionado")
+    @DisplayName("trimestre en perdidas no genera pago fraccionado")
     void noPrepaymentWhenLosingMoney() {
         ProcessedExpense hugeExpense = new ProcessedExpense(
                 LocalDate.of(2026, 2, 1),
@@ -144,6 +138,6 @@ class QuarterlySummaryTest {
 
         assertTrue(summary.hasLosses());
         assertEquals(BigDecimal.ZERO.setScale(2), summary.irpfPrePayment());
-        assertTrue(summary.vatIsRefundable(), "Más IVA soportado que repercutido: sale a compensar");
+        assertTrue(summary.vatIsRefundable(), "mas IVA soportado que repercutido: sale a pagar");
     }
 }
