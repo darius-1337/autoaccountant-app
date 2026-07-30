@@ -10,7 +10,7 @@ La idea de partida es sencilla: quien factura 30.000 euros al año no se lleva 3
 
 ## Aviso sobre la aplicación
 
-Soy programador, no contable. La parte de ingeniería está trabajada: las reglas fiscales viven en Java, el dominio está cubierto con tests (de momento solo hay uno :P) y los importes se calculan con aritmética decimal exacta. La parte fiscal es otra historia.
+Soy programador, no contable. La parte de ingeniería está trabajada: las reglas fiscales viven en Java, el dominio está cubierto con tests (de momento solo hay un par :P) y los importes se calculan con aritmética decimal exacta. La parte fiscal es otra historia.
 
 He construido las reglas apoyándome en documentación pública, en los datos abiertos de [datos.gob.es](https://datos.gob.es/es/) para la clasificación de actividades, y en bastantes horas de lectura. Pero no tengo formación contable, y hay decisiones que he tomado con mi mejor criterio sin poder contrastarlas con alguien que sepa de verdad. Las pruebas las he hecho con facturas inventadas por mí.
 
@@ -68,6 +68,14 @@ Que sean dos y no uno tiene que ver con la ausencia de base de datos. El servido
 ### El servicio de IA está detrás de una interfaz
 
 Todo el proyecto conoce un contrato, `InvoiceOcrService`, y nada más. Quién lo implemente por debajo le da igual: hoy es Gemini, mañana podría ser un modelo local con Ollama o cualquier otro proveedor. Conectar una implementación nueva es cuestión de una anotación `@Profile`.
+
+El prompt no está incrustado en el código: es un prompt.md que se carga como recurso al arrancar. Dentro va el contexto fiscal completo —los tipos de IVA, las reglas de deducción por categoría, los límites de dietas, qué hacer ante una factura ilegible— y el esquema JSON exacto que se le exige de vuelta al modelo.
+
+Tenerlo fuera del código tiene una ventaja concreta: ajustar cómo clasifica el modelo es editar un archivo de texto, no recompilar. Y se lee como lo que es, un documento de instrucciones, en lugar de quedar troceado entre concatenaciones de Java.
+
+Antes de enviarlo se sustituyen dos datos que dependen del usuario: la actividad económica y el ejercicio fiscal. También se le inyecta una línea con si su actividad tiene afectación exclusiva de vehículo, un dato que el propio Java calcula. Así el modelo razona sobre el mismo hecho que después usará el backend, en lugar de intentar adivinarlo del texto de la actividad.
+
+Conviene tener presente que el enum de categorías del prompt y el ExpenseCategory de Java tienen que coincidir exactamente. Si cambias uno sin el otro, las facturas empiezan a caer en la categoría por defecto sin que nada falle.
 
 Siendo sincero, esa parte es la "fácil". Escribir la implementación nueva sí da trabajo, porque cada modelo tiene sus manías: Gemini acepta un PDF directamente, mientras que los modelos de visión locales solo entienden imágenes y habría que rasterizar el documento antes; la forma de garantizar que la respuesta llegue como JSON válido cambia según el proveedor y bla bla bla.
 La adherencia al esquema es bastante peor en modelos pequeños. Pero todo eso queda encerrado dentro de una clase, y el resto del proyecto ni se entera.
