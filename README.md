@@ -11,7 +11,7 @@ La idea de partida es sencilla: quien factura 30.000 euros al año no se lleva 3
 <!-- Captura principal: el panel con los cuatro números tras cerrar un trimestre. Es la imagen que explica el proyecto más rápido. -->
 ![Panel de resultados de un trimestre](docs/img/panel-resultados.png)
 
-## Una advertencia honesta antes de nada
+## Un aviso sobre la aplicación
 
 Soy programador, no contable. La parte de ingeniería está trabajada: las reglas fiscales viven en Java, el dominio está cubierto con tests (de momento solo hay uno :P) y los importes se calculan con aritmética decimal exacta. La parte fiscal es otra historia.
 
