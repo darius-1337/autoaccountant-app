@@ -1,5 +1,6 @@
 package io.github.darius.autoaccountant.controller;
 
+import io.github.darius.autoaccountant.domain.DeductionProfile;
 import io.github.darius.autoaccountant.dto.OcrResult;
 import io.github.darius.autoaccountant.dto.TaxCalculationResponse;
 import io.github.darius.autoaccountant.service.InvoiceOcrService;
@@ -29,6 +30,8 @@ public class InvoiceController {
             ) {
         try {
             OcrResult ocrResult = ocrService.readInvoice(file, sector);
+
+            DeductionProfile profile = DeductionProfile.valueOf(sector);
             TaxCalculationResponse response = taxCalculatorService.processExpense(ocrResult, sector);
 
             return ResponseEntity.ok(response);
