@@ -10,8 +10,9 @@ public class CorsConfig implements WebMvcConfigurer {
 
     // application.properties (local):
     //   app.cors.allowed-origins=http://localhost:8080,http://127.0.0.1:8080
+    //   app.cors.allowed-origins=link del despliegue de Render
     // Render (variable de entorno, Spring la mapea automáticamente):
-    //   APP_CORS_ALLOWED_ORIGINS=https://tu-app.onrender.com
+    //   APP_CORS_ALLOWED_ORIGINS=link del despliegue en Render
     @Value("${app.cors.allowed-origins}")
     private String[] allowedOrigins;
 
