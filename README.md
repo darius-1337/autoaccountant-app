@@ -2,8 +2,6 @@
 
 *[English version](README.en.md)*
 
-> **Proyecto en desarrollo.** El código está terminado y funciona en local, faltaría el despliegue en Render. Consulta el apartado *Estado actual* para saber dónde está cada cosa. Esta nota es temporal.
-
 Calculadora fiscal trimestral para autónomos en España. Lee facturas de gasto con un modelo de inteligencia artificial, las clasifica según la actividad económica declarada y desglosa lo que hay que reservar para Hacienda.
 
 La idea de partida es sencilla: quien factura 30.000 euros al año no se lleva 30.000 euros. Entre el IVA que cobra por cuenta de Hacienda, el pago fraccionado del IRPF y la cuota de autónomos, la diferencia entre lo que entra y lo que queda es grande, y no suele quedar clara hasta que llega el trimestre. Esta aplicación intenta enseñar esa diferencia antes de que llegue.
