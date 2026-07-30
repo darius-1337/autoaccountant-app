@@ -8,7 +8,6 @@ Calculadora fiscal trimestral para autónomos en España. Lee facturas de gasto 
 
 La idea de partida es sencilla: quien factura 30.000 euros al año no se lleva 30.000 euros. Entre el IVA que cobra por cuenta de Hacienda, el pago fraccionado del IRPF y la cuota de autónomos, la diferencia entre lo que entra y lo que queda es grande, y no suele quedar clara hasta que llega el trimestre. Esta aplicación intenta enseñar esa diferencia antes de que llegue.
 
-<!-- Captura principal: el panel con los cuatro números tras cerrar un trimestre. Es la imagen que explica el proyecto más rápido. -->
 ![Panel de resultados de un trimestre](docs/img/panel-resultados.png)
 
 ## Aviso sobre la aplicación
@@ -43,18 +42,17 @@ Hay además tres desviaciones que conozco y que aún no he resuelto:
 
 **4. Sube las facturas de gasto.** Arrastra los PDF o pulsa para abrir el explorador. Se procesan una a una y cada resultado aparece debajo con su estado.
 
-<!-- Captura: una factura procesada correctamente, con el IVA deducible a la derecha. -->
-![Factura procesada correctamente](docs/img/factura-ok.png)
+![Factura procesada correctamente](docs/factura-ok-test.png)
 
 **5. Revisa lo que quede marcado.** Hay gastos que una factura por sí sola no permite resolver: los de vehículo, los suministros de la vivienda, las dietas o las atenciones a clientes dependen de datos que no están en el papel. Esas facturas se quedan fuera del cálculo hasta que las confirmes, y la aplicación explica qué le falta.
 
-<!-- Captura: factura en ámbar, mostrando el razonamiento del modelo y el motivo por el que pide revisión. -->
-![Factura pendiente de revisión con el razonamiento del modelo](docs/img/factura-revision.png)
+![Factura pendiente de revisión con el razonamiento del modelo](docs/factura-revision.png)
 
-<!-- Captura: documento rechazado, con el motivo. Queda bien si es una proforma o un presupuesto. -->
-![Documento rechazado](docs/img/factura-rechazada.png)
+![Documento rechazado](docs/factura-rechazada.png)
 
 **6. Lee el resultado.** El panel muestra el total facturado, lo que hay que reservar para el IVA, la provisión del IRPF y el dinero que queda realmente disponible.
+
+![Panel desglose total](docs/panel-total.png)
 
 ## Cómo está construido
 
