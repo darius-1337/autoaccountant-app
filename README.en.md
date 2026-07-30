@@ -2,9 +2,7 @@
 
 *[Versión en español](README.md)*
 
-> **Work in progress.** The code is finished and runs locally; deployment is still pending. See *Current status* for where everything stands. This note is temporary.
-
-A quarterly tax calculator for self-employed workers in Spain (*autónomos*). It reads expense invoices with an AI model, classifies them against the user's registered business activity, and breaks down how much needs to be set aside for the tax office.
+AutoAccountant is a quarterly tax calculator for self-employed workers in Spain (*autónomos*). It reads expense invoices with an AI model, classifies them against the user's registered business activity, and breaks down how much needs to be set aside for the tax office.
 
 The starting point is simple: billing €30,000 a year doesn't mean taking home €30,000. Between the VAT you collect on the tax office's behalf, the quarterly income tax prepayment and the monthly social security contribution, the gap between what comes in and what stays yours is wide, and it rarely becomes clear until the quarter closes. This app tries to show you that gap before it arrives.
 
