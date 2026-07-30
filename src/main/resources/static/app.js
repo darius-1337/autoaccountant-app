@@ -91,7 +91,7 @@ function updateUILanguage() {
 }
 
 async function loadCnaeData() {
-    const cacheKey = 'iae_codes_istac_v1';
+    const cacheKey = 'cnae_2025_istac_v1';
     const datosGuardados = localStorage.getItem(cacheKey);
 
     if (datosGuardados) {
@@ -101,15 +101,17 @@ async function loadCnaeData() {
     }
 
     try {
-        const response = await fetch('/codes.json');
+        const response = await fetch('/codes-cnae.json');
         if (!response.ok) throw new Error("Error HTTP al cargar codes.json");
 
         const data = await response.json();
 
-        iaeDataCache = data.code.map(item => {
-            const nombreEs = item.name.text.find(t => t.lang === 'es')?.value || "Desconocido";
-            return { id: item.id, nombre: nombreEs };
-        });
+        iaeDataCache = data.code
+            .filter(item => item.id !== '_T' && item.id.length === 4)
+            .map(item => {
+                const nameEs = item.name.text.find(t => t.lang === 'es')?.value || "Desconocido";
+                return { id: item.id, nombre: nameEs };
+            });
 
         localStorage.setItem(cacheKey, JSON.stringify(iaeDataCache));
         buildBrowser();
@@ -161,17 +163,24 @@ dropzone.addEventListener('dragleave', () => {
 
 dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
+    dragDepth = 0;
     dropzone.classList.remove('dragover');
 
+    for (let file of e.dataTransfer.files) {
+        if (file.type === "application/pdf") processInvoice(file);
+        else alert(translations[currentLang].alertPdf);
+    }
+});
 
 const fileInput = document.getElementById('fileInput');
 
 dropzone.addEventListener('click', () => fileInput.click());
+
 dropzone.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
 });
 
-    fileInput.addEventListener('change', () => {
+fileInput.addEventListener('change', () => {
     for (let file of fileInput.files) {
         if (file.type === "application/pdf") processInvoice(file);
         else alert(translations[currentLang].alertPdf);
@@ -179,93 +188,78 @@ dropzone.addEventListener('keydown', (e) => {
     fileInput.value = '';
 });
 
-
-    const files = e.dataTransfer.files;
-    for (let file of files) {
-        if (file.type === "application/pdf") {
-            processInvoice(file);
-        } else {
-            alert(translations[currentLang].alertPdf);
-        }
-    }
-});
-
 async function processInvoice(file) {
-    const perfilJava = getTaxProfile(sectorInput.value);
+        const perfilJava = getTaxProfile(sectorInput.value);
 
-const rowId = `row-${nextRowId++}`;
-const li = document.createElement('li');
-li.id = rowId;
-li.innerHTML = `
-    <span><strong>${translations[currentLang].statusProcessing}</strong> ${file.name}</span>
-    <span class="row-actions">
-        <span class="row-amount">...</span>
-        <button type="button" class="row-remove" aria-label="Eliminar">&times;</button>
-    </span>`;
-fileList.prepend(li);
+        const rowId = `row-${nextRowId++}`;
+        const li = document.createElement('li');
+        li.id = rowId;
+        li.dataset.status = 'processing';
 
-li.querySelector('.row-remove').addEventListener('click', (e) => {
-    e.stopPropagation();
-    processedExpenses = processedExpenses.filter(item => item.__rowId !== rowId);
-    li.remove();
-    calculateQuarter();
-});
+        li.innerHTML = `
+            <div class="row-main">
+                <span><strong>${translations[currentLang].statusProcessing}</strong> ${file.name}</span>
+            </div>
+            <span class="row-actions">
+                <span class="row-amount">...</span>
+                <button type="button" class="row-remove" aria-label="Eliminar">&times;</button>
+            </span>`;
+        fileList.prepend(li);
 
-data.__rowId = rowId;
-processedExpenses.push(data);
+        const main = li.querySelector('.row-main');
+        const amount = li.querySelector('.row-amount');
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("sector", perfilJava);
-
-    try {
-        const response = await fetch('/api/invoices/process', {
-            method: 'POST',
-            body: formData
+        li.querySelector('.row-remove').addEventListener('click', (e) => {
+            e.stopPropagation();
+            processedExpenses = processedExpenses.filter(item => item.__rowId !== rowId);
+            li.remove();
+            calculateQuarter();
         });
 
-        if (!response.ok) throw new Error('Error en el servidor Java');
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("sector", perfilJava);
 
-        const data = await response.json();
+        try {
+            const response = await fetch('/api/invoices/process', {
+                method: 'POST',
+                body: formData
+            });
 
-        if (!data.isValid) {
-            li.innerHTML = `<span><strong>${translations[currentLang].statusRejected}</strong> ${file.name}</span>
-                            <span style="color: var(--text-secondary); font-size: 0.85em;">${data.manualReviewReason || 'N/A'}</span>`;
-            li.style.borderColor = "var(--border-color)";
+            if (!response.ok) throw new Error('Error en el servidor Java');
 
+            const data = await response.json();
+            data.__rowId = rowId;
             processedExpenses.push(data);
 
-            return;
-        }
-
-        if (data.requiresManualReview) {
-            li.innerHTML = `
-                <div style="width: 100%;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span><strong>${translations[currentLang].statusReview}</strong> ${file.name} (${data.category})</span>
-                        <span>+0.00€ (${translations[currentLang].pending})</span>
-                    </div>
-                    <div class="warning-box" style="margin-top: 0.5rem; width: 100%; border-left: 3px solid var(--text-primary);">
+            if (!data.isValid) {
+                li.dataset.status = 'rejected';
+                main.innerHTML = `<span><strong>${translations[currentLang].statusRejected}</strong> ${file.name}</span>
+                    <span style="color: var(--text-secondary); font-size: 0.85em;">${data.manualReviewReason || 'N/A'}</span>`;
+                amount.innerText = '—';
+            } else if (data.requiresManualReview) {
+                li.dataset.status = 'review';
+                main.innerHTML = `
+                    <span><strong>${translations[currentLang].statusReview}</strong> ${file.name} (${data.category})</span>
+                    <div class="warning-box" style="margin-top: 0.5rem; width: 100%;">
                         <strong>${translations[currentLang].aiReasoning}</strong> ${data.aiReasoning}<br>
                         <em>Aviso: ${data.manualReviewReason}</em>
-                    </div>
-                </div>`;
+                    </div>`;
+                amount.innerText = `0.00 € (${translations[currentLang].pending})`;
+            } else {
+                li.dataset.status = 'ok';
+                main.innerHTML = `<span><strong>${translations[currentLang].statusOk}</strong> ${file.name} | ${data.category}</span>`;
+                amount.innerText = `+${data.deductibleVat.toFixed(2)} €`;
+            }
 
-                processedExpenses.push(data);
+            calculateQuarter();
 
-            return;
+        } catch (error) {
+            console.error("Fallo de red o servidor:", error);
+            li.dataset.status = 'error';
+            main.innerHTML = `<span><strong>${translations[currentLang].statusError}</strong> ${file.name}</span>`;
+            amount.innerText = '—';
         }
-
-        processedExpenses.push(data);
-
-        li.innerHTML = `<span><strong>${translations[currentLang].statusOk}</strong> ${file.name} | ${data.category}</span>
-                        <span>+${data.deductibleVat.toFixed(2)}€</span>`;
-
-    } catch (error) {
-        console.error("Fallo de red o servidor:", error);
-        li.innerHTML = `<span><strong>${translations[currentLang].statusError}</strong> ${file.name}</span> <span>0.00€</span>`;
-        li.style.color = "var(--text-secondary)";
-    }
 }
 
 function addManualIncome() {
@@ -286,8 +280,8 @@ function addManualIncome() {
     };
 
     manualIncome.push(entry);
-    renderIngresos();
-    calcularTrimestre();
+    renderIncome();
+    calculateQuarter();
 
     document.getElementById('incomeAmount').value = '';
 }
@@ -354,7 +348,7 @@ function drawDashboard(summary) {
     document.getElementById('totalGross').innerText = eur(summary.totalBilled);
     document.getElementById('totalVat').innerText = eur(summary.vatToPay);
     document.getElementById('totalIrpf').innerText = eur(summary.irpfPrePayment);
-    document.getElementById('totalNet').innerText = eur(summary.avalibleCash);
+    document.getElementById('totalNet').innerText = eur(summary.availableCash);
 
     const note = document.getElementById('excludedNote');
     if (summary.excludedDocuments > 0) {
